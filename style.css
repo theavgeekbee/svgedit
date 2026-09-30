@@ -19,12 +19,53 @@ body {
     flex: 1;
 }
 
-.code-textbox {
+.left {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+.code-textbox, .syntax-highlight {
     width: 100%;
     height: 100%;
-    background-color: #1e1e1e; /* Classic dark theme */
     color: white;
-    font-size: x-large;
-    outline: none;
-    resize: none;
+    font-size: x-large !important;
+    outline: none !important;
+    resize: none !important;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+}
+
+.syntax-highlight {
+    background-color: black;
+}
+
+.language-html {
+    padding: 0 !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    white-space: pre-wrap;
+    z-index: 2;
+    background-color: transparent !important;
+}
+
+.code-textbox {
+    z-index: 1;
+    color: transparent;
+    background-color: transparent;
+    caret-color: white;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+svg:hover {
+    outline: 1px solid red;
 }

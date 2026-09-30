@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <!-- syntax highlighting -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.12.0/styles/androidstudio.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.12.0/highlight.min.js"></script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>SVG Editor</title>
@@ -10,6 +13,7 @@
     </head>
     <body>
         <div class="left">
+            <pre id="highlight-layer" class="syntax-highlight" aria-hidden="true"><code class="language-html" id="highlight-content"></code></pre>
             <textarea id="svg-edit" class="code-textbox" spellcheck="false" autocapitalize="false">
 <svg width="300" height="130" xmlns="http://www.w3.org/2000/svg">
     <rect width="200" height="100" x="10" y="10" rx="20" ry="20" fill="blue" />
