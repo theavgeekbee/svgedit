@@ -21,11 +21,32 @@ body {
 
 .left {
     position: relative;
+    display: flex;
     width: 100%;
     height: 100vh;
+
+    font-family: monospace;
+}
+
+.line-numbers {
+    flex: 0 0 3em;
+    user-select: none;
+    color: #888;
+    background-color: black;
+    font-size: x-large;
+
+    position: relative;
+
+    display: flex;
+    justify-content: flex-end;
+}
+.line-numbers > div {
+    position: absolute;
+    width: 3em;
+    text-align: end;
 }
 .code-textbox, .syntax-highlight {
-    width: 100%;
+    width: calc(100% - 3em);
     height: 100%;
     color: white;
     font-size: x-large !important;
@@ -34,7 +55,7 @@ body {
 
     position: absolute;
     top: 0;
-    left: 0;
+    left: 3em;
 
     overflow-wrap: break-word !important;
     word-break: normal !important;
