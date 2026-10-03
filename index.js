@@ -3,45 +3,44 @@ const textDisplay = document.getElementById("highlight-content");
 const displayArea = document.getElementById("display-area");
 const lineNumbers = document.getElementById("line-numbers");
 
-function getNthValidSibling(startNode, n) {
-    let currentNode = startNode;
-    let validCount = 0;
+const mirror = document.createElement('div');
+document.body.appendChild(mirror);
 
-    while (currentNode && validCount < n) {
-        // 1. Move to the next sibling (skipping any child trees)
-        currentNode = currentNode.nextSibling;
-        if (!currentNode) break;
+let tops = [];        // y of each logical line's first row, in content coordinates
+let dirty = true;
 
-        // 2. Skip comment nodes (nodeType 8)
-        if (currentNode.nodeType === Node.COMMENT_NODE) {
-            continue;
-        }
-
-        // 3. Skip whitespace-only text nodes
-        if (currentNode.nodeType === Node.TEXT_NODE && !currentNode.textContent.trim()) {
-            continue;
-        }
-
-        // If it passed the checks, it's a valid node (Element or non-empty Text)
-        validCount++;
-    }
-
-    return currentNode; // Returns the nth valid node, or null if out of bounds
+function syncMirror(ta) {
+    const cs = getComputedStyle(ta);
+    ['fontStyle','fontVariant','fontWeight','fontSize','fontFamily','lineHeight',
+        'letterSpacing','wordSpacing','textTransform','textIndent','tabSize',
+        'direction','wordBreak','paddingTop','paddingRight','paddingBottom','paddingLeft']
+        .forEach(p => (mirror.style[p] = cs[p]));
+    Object.assign(mirror.style, {
+        position: 'absolute', left: '-9999px', top: '0', visibility: 'hidden',
+        contain: 'layout style',
+        boxSizing: 'border-box', border: '0',
+        whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
+        width: ta.clientWidth + 'px',
+    });
+    dirty = true;
 }
 
-function getLineY(lineNum) {
-    const parent = textDisplay.childNodes.item(0);
-    const node = getNthValidSibling(parent, lineNum);
-
-    if (!node) {
-        return undefined;
-    } else if (node.nodeType === Node.TEXT_NODE) {
-        const range = document.createRange();
-        range.selectNodeContents(node);
-        return range.getBoundingClientRect().y;
-    } else {
-        return node.getBoundingClientRect().y;
+function rebuild(ta) {
+    const frag = document.createDocumentFragment();
+    for (const line of ta.value.split('\n')) {
+        const d = document.createElement('div');
+        d.textContent = line || '\u200b';
+        frag.appendChild(d);
     }
+    mirror.replaceChildren(frag);
+
+    tops = Array.from(mirror.children, d => d.offsetTop);
+    dirty = false;
+}
+
+function lineY(ta, lineNum) {
+    if (dirty) rebuild(ta);
+    return tops[lineNum] - ta.scrollTop;
 }
 
 function onTextChanged(e) {
@@ -50,11 +49,12 @@ function onTextChanged(e) {
     textDisplay.removeAttribute('data-highlighted');
     hljs.highlightAll();
 
+    syncMirror(svgEdit);
     const lineCount = svgEdit.value.split('\n').length;
     lineNumbers.innerHTML = Array.from(
         { length: lineCount },
         (_, i) => {
-            return `<div style="top: ${getLineY(i)}px">${i + 1}</div>`
+            return `<div style="top: ${lineY(svgEdit, i)}px">${i + 1}</div>`
         }
     ).join('');
 }
